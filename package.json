@@ -8,7 +8,7 @@
     "build": "tsc -b ./tsconfig.json",
     "postbuild": "copyfiles -u 1 src/**/*.dat dist/",
     "prestart": "npm run build",
-    "start": "node --max-old-space-size=9192 dist/index.js --day",
+    "start": "node --max-old-space-size=9192 --stack-size=65500 dist/index.js --day",
     "test": "jest",
     "test:coverage": "cross-env NODE_ENV=test jest --coverage"
   },
@@ -37,6 +37,8 @@
     "typescript": "^4.9.3"
   },
   "dependencies": {
+    "elegant-queue": "^1.0.7",
+    "priority-queue-typescript": "^2.0.3",
     "words-to-numbers": "^1.5.1"
   }
 }
