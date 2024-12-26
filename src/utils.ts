@@ -205,4 +205,27 @@ export function bfsAll(map: string[], start: rc, end: rc, notSteep: (a: string, 
     return paths
 }
 
+export class MapUtils {
+    static filter<TKey, TValue>(map: Map<TKey, TValue>, filterFunction: (key: TKey, value: TValue) => boolean): Map<TKey, TValue> {
+        const filteredMap: Map<TKey, TValue> = new Map<TKey, TValue>();
+
+        map.forEach((value, key) => {
+            if (filterFunction(key, value)) {
+                filteredMap.set(key, value);
+            }
+        });
+
+        return filteredMap;
+    }
+
+    static mapValue<TKey, TValue>(map: Map<TKey, TValue>, mapFunction: (key: TKey, value: TValue) => TValue): Map<TKey, TValue> {
+        const mappedMap: Map<TKey, TValue> = new Map<TKey, TValue>();
+
+        map.forEach((value, key) => {
+            mappedMap.set(key, mapFunction(key, value));
+        });
+
+        return mappedMap;
+    }
+}
 
