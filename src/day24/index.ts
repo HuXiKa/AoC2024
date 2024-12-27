@@ -32,7 +32,36 @@ export function part1(data: string[]) {
 }
 
 export function part2(data: string[]) {
+  const [inputString, wireString] = data  
+  const wires = parseWires(wireString)
 
+  const BIT_LENGTH = 45
+
+  const incorrect: string[] = []
+  for (let i = 0; i < BIT_LENGTH; i++) {
+      const id = i.toString().padStart(2, '0')
+      const xor1 = wires.find(wire => ((wire.input1 === `x${id}` && wire.input2 === `y${id}`) || (wire.input1 === `y${id}` && wire.input2 === `x${id}`)) && wire.op === 'XOR')
+      const and1 = wires.find(wire => ((wire.input1 === `x${id}` && wire.input2 === `y${id}`) || (wire.input1 === `y${id}` && wire.input2 === `x${id}`)) && wire.op === 'AND')
+      const z = wires.find(wire => wire.output === `z${id}`)
+
+      if (xor1 === undefined || and1 === undefined || z === undefined) continue
+
+      // each z must be connected to an XOR
+      if (z.op !== 'XOR') incorrect.push(z.output)
+      
+      // each AND must go to an OR (besides the first case as it starts the carry flag)
+      const or = wires.find(wire => wire.input1 === and1.output || wire.input2 === and1.output)
+      if (or !== undefined && or.op !== 'OR' && i > 0) incorrect.push(and1.output)
+
+      // the first XOR must to go to XOR or AND
+      const after = wires.find(wire => wire.input1 === xor1.output || wire.input2 === xor1.output)
+      if (after !== undefined && after.op === 'OR') incorrect.push(xor1.output)
+  }
+
+  // each XOR must be connected to an x, y, or z
+  incorrect.push(...wires.filter(wire => !wire.input1[0].match(/[xy]/g) && !wire.input2[0].match(/[xy]/g) && !wire.output[0].match(/[z]/g) && wire.op === 'XOR').map(instruction => instruction.output))
+
+  console.log(incorrect.sort().join(','))
 }
 function parseInputs(inputString: string) {
   return inputString.split('\r\n').map(line => {
